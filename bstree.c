@@ -1,10 +1,10 @@
 #include <stdlib.h>
 #include "BSTree.h"
 
-#include <math.h> //log2
+#include <math.h> 
 #include <assert.h>
 
-// HJÄLPFUNKTIONER
+
 
 
 // Skapar en trädnod, initierar och returnerar den ifall allokeringen lyckades
@@ -17,15 +17,22 @@ static struct treeNode* createNode(int data)
         t->right = NULL;
     }
 
-	return t; //fixa
+	return t; 
 }
 
-// Hjälpfunktion till treeToArray()
+
 // Kopierar elementen från trädet till arrayen i sorterad ordning
-// 'index' är var nästa element från trädet ska sitta i arrayen
 // Returnerar platsen som nästa element ska sitta på
-static int nodesToArray(const BSTree tree, int* array, int index) {
-	return 0; //fixa
+static int nodesToArray(const BSTree tree, int* array, int index)
+{
+    if (tree == NULL)
+        return index;
+
+    index = nodesToArray(tree->left, array, index);
+    array[index++] = tree->nodeValue;
+    index = nodesToArray(tree->right, array, index);
+
+    return index;
 }
 
 // Returnerar det största värdet av a och b
@@ -132,8 +139,23 @@ void printPostorder(const BSTree tree, FILE* stream)
 // svår, optional
 // skriver ut trädet brädden först
 void printLevelorder(const BSTree tree, FILE* stream) {
+    if (isEmpty(tree))
+        return;
 
+    Queue q = createQueue();
+    enqueue(&q, tree);
 
+    while (!isQueueEmpty(q)) {
+        BSTree current = (BSTree)dequeue(&q);
+        fprintf(stream, "%d ", current->nodeValue);
+
+        if (current->left != NULL)
+            enqueue(&q, current->left);
+        if (current->right != NULL)
+            enqueue(&q, current->right);
+    }
+
+    clearQueue(&q); // Clean up the queue after traversal
 }
 
 // Returnerar 1 om 'data' finns i tree, 0 annars
@@ -154,9 +176,32 @@ int find(const BSTree tree, const int data)
 // Tar bort 'data' från trädet om det finns
 void removeElement(BSTree* tree, const int data)
 {
+    if (isEmpty(*tree))
+        return;
 
-	// Postcondition: 'data' finns inte i trädet
-	// Postconditionet förutsätter att trädet förbjuder dubbletter
+    if (data < (*tree)->nodeValue)
+        removeElement(&(*tree)->left, data);
+    else if (data > (*tree)->nodeValue)
+        removeElement(&(*tree)->right, data);
+    else {
+        // Node to be deleted found
+        if ((*tree)->left == NULL && (*tree)->right == NULL) {
+            free(*tree);
+            *tree = NULL;
+        } else if ((*tree)->left == NULL) {
+            BSTree temp = *tree;
+            *tree = (*tree)->right;
+            free(temp);
+        } else if ((*tree)->right == NULL) {
+            BSTree temp = *tree;
+            *tree = (*tree)->left;
+            free(temp);
+        } else {
+            int minValue = findLowest((*tree)->right);
+            (*tree)->nodeValue = minValue;
+            removeElement(&(*tree)->right, minValue);
+        }
+    }
 }
 
 // Returnerar hur många noder som totalt finns i trädet
@@ -198,18 +243,6 @@ int* treeToArray(const BSTree tree, int* size)
 
 
 // Returnerar ett sorterat balancerat träd från en sorterad array
-BSTree* arrayToTree(const int arr[], const int size)
-{
-    BSTree* tree = (BSTree*)malloc(sizeof(BSTree));
-    if (tree != NULL) {
-        *tree = NULL;
-        buildTreeFromArray(tree, arr, size);
-    }
-    return tree;
-}
-
-
-// Balanserar trädet så att depth(tree) == minDepth(tree)
 BSTree* arrayToTree(const int arr[], const int size)
 {
     BSTree* tree = (BSTree*)malloc(sizeof(BSTree));

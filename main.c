@@ -11,9 +11,9 @@ int main()
 
     Graph g = createEmptyGraph();
 
-    addVertex(&g, 0); //skapade node 0 men hoppade över den för att den skulle se precis ut som exempelt i dfs för att se att den fungerade som den skulle
+    addVertex(&g, 0); 
     addVertex(&g, 1);
-    addVertex(&g, 2); // mata in dem i index ordning, so numret som är brevid &g, är value av noden
+    addVertex(&g, 2);
     addVertex(&g, 3);
     addVertex(&g, 4);
     addVertex(&g, 5);
@@ -25,7 +25,7 @@ int main()
     addVertex(&g, 11);
     addVertex(&g, 12);
 
-    addEdge(g,1,2,99); // matar in varje båge av varje nod som den är kopplad till
+    addEdge(g,1,2,99); 
     addEdge(g,1,7,99);
     addEdge(g,1,8,99);
 

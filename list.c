@@ -3,18 +3,6 @@
 #include <stdio.h>
 #include <assert.h>
 
-/*
-	createListNode() finns för att göra koden lättare
-	att skriva. det är en så kallad hjälpfunktion.
-
-	den är _inte_ med i interfacet, och är därmed static.
-
-	vad den ska göra:
-	allokera minne för en ny nod
-	undersök om allokering lyckas
-		returnera NULL ifall mislyckas
-	initiera noden
-	returnera noden */
 
 static struct node* createListNode(const Data d) {
 	struct node* n = (struct node*) malloc(sizeof(struct node));
@@ -26,10 +14,8 @@ static struct node* createListNode(const Data d) {
 }
 
 
-//----
-
 List createEmptyList(void) {
-	return NULL; //är korrekt, ändra inte
+	return NULL; 
 }
 
 int isEmpty(const List l) {
@@ -56,7 +42,6 @@ int addLast(List* l, const Data d) {
 }
 
 void removeFirst(List* l) {
-	//precondition: listan är inte tom (testa med assert)
 	assert(!isEmpty(*l));
 
 	struct node* toRemove = *l;
@@ -65,7 +50,6 @@ void removeFirst(List* l) {
 }
 
 void removeLast(List* l) {
-	//precondition: listan är inte tom (testa med assert)
 	assert(!isEmpty(*l));
 
 	if (isEmpty((*l)->rest))
@@ -89,18 +73,15 @@ void clearList(List* l) {
 		return;
 	removeFirst(l);
 	clearList(l);
-	//postcondition: listan är tom (testa med assert)
 	assert(isEmpty(*l));
 }
 
 Data getFirstElement(const List l) {
-	//precondition: listan är inte tom (testa med assert)
 	assert(!isEmpty(l));
 	return l->d;
 }
 
 Data getLastElement(const List l) {
-	//precondition: listan är inte tom (testa med assert)
 	assert(!isEmpty(l));
 
 	if (isEmpty(l->rest))
@@ -124,14 +105,9 @@ void printList(const List l, FILE* stream){
         fprintf(stream, " -> (ID: %d | Weight: %d) ", l->d.id, l->d.weight);
         printList(l->rest, stream);
     }
-    // om listan tom
-        //newline
-    //annars
-        //skriva ut första elementet
-        //rekursivt anrop
+
 
 }
-
 
 //rightfoldar listan
 Data foldList(const List l, Data(*f) (Data, Data)) {
